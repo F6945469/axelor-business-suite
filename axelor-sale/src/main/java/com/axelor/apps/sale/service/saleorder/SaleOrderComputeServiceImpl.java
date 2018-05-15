@@ -20,6 +20,7 @@ package com.axelor.apps.sale.service.saleorder;
 import java.lang.invoke.MethodHandles;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -160,25 +161,30 @@ public class SaleOrderComputeServiceImpl implements SaleOrderComputeService {
 		return total;
 	}
 
-	private void _addPackLines(SaleOrder saleOrder) {
-		
-		if (saleOrder.getSaleOrderLineList() == null) {
-			return;
-		}
-		
-		List<SaleOrderLine> lines = new ArrayList<SaleOrderLine>();
-		lines.addAll(saleOrder.getSaleOrderLineList());
-		for (SaleOrderLine line : lines) {
-			if (line.getSubLineList() == null) {
-				continue;
-			}
-			for (SaleOrderLine subLine : line.getSubLineList()) {
-				if (subLine.getSaleOrder() == null) {
-					saleOrder.addSaleOrderLineListItem(subLine);
-				}
-			}
-		}
-	}
+  private void _addPackLines(SaleOrder saleOrder) {
+      
+    if (saleOrder.getSaleOrderLineList() == null) {
+      return;
+    }
+        
+    List<SaleOrderLine> lines = new ArrayList<SaleOrderLine>();
+    lines.addAll(saleOrder.getSaleOrderLineList());
+    for (SaleOrderLine line : lines) {
+        if (line.getSubLineList() == null || line.getSubLineList().isEmpty()) {
+            continue;
+        }
+        int subSequence = 1;
+        for (SaleOrderLine subLine : line.getSubLineList()) {
+            if (subLine.getSaleOrder() == null) {
+              subLine.setSequence(subSequence + line.getSequence());
+                saleOrder.getSaleOrderLineList().add(subLine);
+                subSequence++;
+            }
+        }
+        
+    }
+  }
+
 	
 	/**
 	 * Permet de réinitialiser la liste des lignes de TVA
@@ -206,5 +212,35 @@ public class SaleOrderComputeServiceImpl implements SaleOrderComputeService {
 		return price;
 	}
 
+	
+	public List<SaleOrderLine> removeSubLines(List<SaleOrderLine> soLines) {
+
+    if (soLines == null) {
+          return soLines;
+      }
+      
+      
+      List<SaleOrderLine> subLines = new ArrayList<SaleOrderLine>();
+      for (SaleOrderLine packLine : soLines) {
+          if (packLine.getTypeSelect() == 2 && packLine.getSubLineList() != null) {
+              packLine.getSubLineList().removeIf(it->it.getId() != null && !soLines.contains(it));
+              packLine.setTotalPack(packLine.getSubLineList()
+                      .stream().map(it->it.getExTaxTotal()).reduce(BigDecimal.ZERO, BigDecimal::add));
+              subLines.addAll(packLine.getSubLineList());
+          }
+      }
+      Iterator<SaleOrderLine> lines = soLines.iterator();
+
+      while (lines.hasNext()) {
+          SaleOrderLine subLine = lines.next();
+          if (subLine.getId() != null 
+                  && subLine.getParentLine() != null
+                  && !subLines.contains(subLine)) {
+                  lines.remove();
+          }
+      }
+
+      return soLines;
+  }
 
 }

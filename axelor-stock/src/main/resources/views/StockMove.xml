@@ -164,7 +164,7 @@
         </panel>
 
         <panel-tabs>
-            <panel-related height="6" field="stockMoveLineList" onChange="action-stock-move-method-compute,action-stock-move-line-method-change-conformity" readonlyIf="statusSelect == 3" grid-view="stock-move-line-grid" form-view="stock-move-line-form"/>
+            <panel-related height="6" field="stockMoveLineList" onChange="action-stock-move-line-change-group" readonlyIf="statusSelect == 3" grid-view="stock-move-line-grid" form-view="stock-move-line-form"/>
             <panel title="Freight Carrier" readonlyIf="statusSelect == 3 || statusSelect == 4" >
                 <field name="shipmentMode" form-view="shipment-mode-grid" grid-view="shipment-mode-grid" />
 				<field name="freightCarrierMode" domain="self.shipmentMode = :shipmentMode"  form-view="freight-carrier-mode-form" grid-view="freight-carrier-mode-grid" onChange="action-stock-move-record-freight-carrier" />
@@ -249,6 +249,13 @@
         </panel>
     </form>
     
+    <action-method name="action-stock-move-method-add-subline">
+    	<call class="com.axelor.apps.supplychain.web.StockMoveController" method="addSubLines"/>
+    </action-method>
+    
+    <action-method name="action-stock-move-method-remove-subline">
+    	<call class="com.axelor.apps.supplychain.web.StockMoveController" method="removeSubLines"/>
+    </action-method>
     
     <action-method name="action-stock-move-method-compute">
     	<call class="com.axelor.apps.stock.web.StockMoveController" method="compute"/>
@@ -280,6 +287,14 @@
         <action name="action-stock-move-attrs-typeselect-change"/>
         <action name="action-stock-move-generate-invoice-button"/>
         <action name="action-stock-move-hide-reserved-qty"/>
+    </action-group>
+    
+    <action-group name="action-stock-move-line-change-group">
+    	<action name="action-stock-move-method-remove-subline"/>
+    	<action name="save" if="stockMoveLineList.find{it->it.lineTypeSelect == 2 &amp;&amp; (it.version != null || it.id == null)} != null" />
+    	<action name="action-stock-move-method-add-subline"/>
+    	<action name="action-stock-move-method-compute"/>
+    	<action name="action-stock-move-line-method-change-conformity"/>
     </action-group>
     
 	<action-group name="action-group-stock-stockmove-plan-click">

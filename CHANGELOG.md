@@ -5,6 +5,8 @@
 ## Improvements
 - Sale order form : improve timetable and printing settings tabs.
 - Employee : Removed social security number field in advanced search.
+- Pack Price Select and Qty update from packLine to subLine.
+- Implement PackLine and SubLine for InvoiceLine and StockMoveLine.
 
 ## Bug Fixes
 - Product : buttons "real qty" and "future qty" will only be display if product is effectively created.
@@ -13,6 +15,8 @@
 - Fix sale order titles on card and stream messages.
 - Fix custom model editor breaking changes due to adk updates.
 - Fix project planning editor breaking changes due to adk updates.
+- Fix social network icons for employee
+- Added new filter for invoice project (for SaleOrderLine, PurchaseOrderLine, and ExpenseLine o2m)
 
 ## [5.0.0-rc2] - 2018-05-09
 ## Improvements

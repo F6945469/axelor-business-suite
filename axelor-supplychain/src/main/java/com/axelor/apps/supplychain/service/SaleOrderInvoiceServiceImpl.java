@@ -255,8 +255,8 @@ public class SaleOrderInvoiceServiceImpl implements SaleOrderInvoiceService {
 								invoicingProduct.getUnit(),
 								taxLine, InvoiceLineGenerator.DEFAULT_SEQUENCE,
 								BigDecimal.ZERO,
-								PriceListLineRepository.AMOUNT_TYPE_NONE,
-								lineAmountToInvoice, null, false)  {
+                PriceListLineRepository.AMOUNT_TYPE_NONE,
+								lineAmountToInvoice, null, false, false)  {
 							@Override
 							public List<InvoiceLine> creates() throws AxelorException {
 
@@ -480,7 +480,7 @@ public class SaleOrderInvoiceServiceImpl implements SaleOrderInvoiceService {
 
 		InvoiceLineGenerator invoiceLineGenerator = new InvoiceLineGeneratorSupplyChain(invoice, product, saleOrderLine.getProductName(),
 				saleOrderLine.getDescription(), qtyToInvoice, saleOrderLine.getUnit(),
-				saleOrderLine.getSequence(), false, saleOrderLine, null, null)  {
+				saleOrderLine.getSequence(), false, saleOrderLine, null, null, saleOrderLine.getIsSubLine())  {
 
 			@Override
 			public List<InvoiceLine> creates() throws AxelorException {

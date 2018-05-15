@@ -45,6 +45,7 @@ import com.axelor.apps.sale.db.SaleOrder;
 import com.axelor.apps.sale.db.repo.SaleOrderRepository;
 import com.axelor.apps.sale.exception.IExceptionMessage;
 import com.axelor.apps.sale.service.saleorder.SaleOrderComputeService;
+import com.axelor.apps.sale.service.saleorder.SaleOrderComputeServiceImpl;
 import com.axelor.apps.sale.service.saleorder.SaleOrderCreateService;
 import com.axelor.apps.sale.service.saleorder.SaleOrderMarginService;
 import com.axelor.apps.sale.service.saleorder.SaleOrderService;
@@ -549,4 +550,13 @@ public class SaleOrderController {
 	    response.setAttr("priceList", "domain", domain);
 	}
 
+    public void removeSubLines(ActionRequest request, ActionResponse response) {
+        try {
+            SaleOrder saleOrder = request.getContext().asType(SaleOrder.class);
+            response.setValue("saleOrderLineList",  Beans.get(SaleOrderComputeService.class).removeSubLines(saleOrder.getSaleOrderLineList()));
+        } catch (Exception e) {
+            TraceBackService.trace(response, e);
+            response.setReload(true);
+        }
+    }
 }
